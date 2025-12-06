@@ -3,7 +3,7 @@ name: Build, Run Automation and Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main 
+      - main  # Workflow akan dijalankan saat ada push ke branch main
 
 jobs:
   trigger-cucumber-tests:
@@ -18,26 +18,25 @@ jobs:
       - name: Trigger Cucumber Automation from api-automation
         uses: peter-evans/repository-dispatch@v3
         with:
-          repository: dodysitorus/api-automation
-          token: ${{ secrets.GH_TOKEN }} 
-          event-type: trigger-cucumber-tests
-          client-payload: {} 
+          repository: dodysitorus/api-automation  # Ganti dengan nama repository api-automation
+          token: ${{ secrets.GH_TOKEN }}  # Gunakan token GitHub untuk autentikasi
+          event-type: trigger-cucumber-tests  # Nama event yang memicu workflow di repository api-automation
 
   deploy-to-gh-pages:
     runs-on: ubuntu-latest
-    # Job ini akan dijalankan hanya setelah job pemicu BERHASIL DIKIRIM
-    needs: trigger-cucumber-tests 
+    needs: trigger-cucumber-tests  # Pastikan job ini hanya dijalankan setelah trigger-cucumber-tests berhasil
+    if: ${{ success() }}  # Memastikan job deploy hanya berjalan jika "trigger-cucumber-tests" sukses
 
     steps:
       # Langkah 3: Checkout repository Web Statis
       - name: Checkout Repository
         uses: actions/checkout@v3
-      
+
       # Langkah 4: Deploy ke GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GH_TOKEN }} 
-          publish_dir: ./ 
+          github_token: ${{ secrets.GH_TOKEN }}  # Gunakan PAT yang disimpan di secrets
+          publish_dir: ./  # Ganti dengan folder build jika menggunakan framework
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
