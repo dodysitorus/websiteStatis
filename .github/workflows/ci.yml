@@ -1,0 +1,38 @@
+name: Build and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # Ganti dengan nama branch kamu (misalnya main atau master)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # 2. Setup Node.js (optional, jika menggunakan tool seperti npm atau yarn)
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'  # Sesuaikan dengan versi Node.js yang kamu gunakan
+
+      # 3. Install dependencies (optional, jika menggunakan npm atau yarn)
+      # - name: Install dependencies
+      #   run: npm install
+
+      # 4. Build project (optional, jika menggunakan framework seperti React, Vue, dll)
+      # - name: Build project
+      #   run: npm run build
+
+      # 5. Deploy ke GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./ 
+          user_name: 'github-actions[bot]' 
+          user_email: 'github-actions[bot]@users.noreply.github.com' 
