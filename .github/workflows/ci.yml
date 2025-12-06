@@ -20,11 +20,13 @@ jobs:
         with:
           repository: dodysitorus/api-automation  # Ganti dengan nama repository api-automation
           token: ${{ secrets.GH_TOKEN }}  # Gunakan token GitHub untuk autentikasi
-          event-type: trigger-cucumber-tests  # Event yang memicu workflow di repository api-automation
+          event-type: trigger-cucumber-tests  # Nama event yang memicu workflow di repository api-automation
+          client-payload: {}  # Opsional, jika ada payload tambahan yang perlu dikirim
 
   deploy-to-gh-pages:
     runs-on: ubuntu-latest
-    needs: trigger-cucumber-tests  # Pastikan langkah deploy hanya berjalan setelah automation selesai
+    needs: trigger-cucumber-tests  # Pastikan tahap deploy hanya dijalankan setelah "trigger-cucumber-tests" berhasil
+    if: ${{ success() }}  # Memastikan job deploy hanya berjalan jika "trigger-cucumber-tests" sukses
 
     steps:
       # Langkah 3: Checkout repository Web Statis
