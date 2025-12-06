@@ -1,44 +1,41 @@
-name: Build and Deploy to GitHub Pages
+name: Build, Run Automation and Deploy to GitHub Pages
 
 on:
   push:
     branches:
-      - main  # Ganti dengan branch yang kamu gunakan (misalnya main atau master)
+      - main  # Workflow akan dijalankan saat ada push ke branch main
 
 jobs:
-  build:
+  trigger-cucumber-tests:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout repository
-      - name: Checkout repository
+      # Langkah 1: Checkout repository Web Statis
+      - name: Checkout Web Statis Repository
         uses: actions/checkout@v2
 
-      # 2. Setup Git config (Menambahkan konfigurasi git untuk commit)
-      - name: Set up Git config
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      # 3. Setup Node.js (optional, jika menggunakan npm atau yarn)
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
+      # Langkah 2: Trigger workflow di repository "api-automation"
+      - name: Trigger Cucumber Automation from api-automation
+        uses: peter-evans/repository-dispatch@v2
         with:
-          node-version: '14'  # Sesuaikan dengan versi Node.js yang kamu gunakan
+          repository: <username>/api-automation  # Ganti dengan nama repository api-automation
+          token: ${{ secrets.GITHUB_TOKEN }}  # Gunakan token GitHub untuk autentikasi
+          event-type: trigger-cucumber-tests  # Event yang memicu workflow di repository api-automation
 
-      # 4. Install dependencies (optional, jika menggunakan npm atau yarn)
-      # - name: Install dependencies
-      #   run: npm install
+  deploy-to-gh-pages:
+    runs-on: ubuntu-latest
+    needs: trigger-cucumber-tests  # Pastikan langkah deploy hanya berjalan setelah automation selesai
 
-      # 5. Build project (optional, jika menggunakan framework seperti React, Vue, dll)
-      # - name: Build project
-      #   run: npm run build
+    steps:
+      # Langkah 3: Checkout repository Web Statis
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-      # 6. Deploy ke GitHub Pages
+      # Langkah 4: Deploy ke GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GH_TOKEN }}  # Menggunakan PAT dari GitHub Secrets
+          github_token: ${{ secrets.GH_TOKEN }}  # Gunakan PAT yang disimpan di secrets
           publish_dir: ./  # Ganti dengan folder build jika menggunakan framework
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
