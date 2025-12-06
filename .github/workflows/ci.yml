@@ -19,7 +19,7 @@ jobs:
         uses: peter-evans/repository-dispatch@v2
         with:
           repository: dodysitorus/api-automation  # Ganti dengan nama repository api-automation
-          token: ${{ secrets.GITHUB_TOKEN }}  # Gunakan token GitHub untuk autentikasi
+          token: ${{ secrets.GH_TOKEN }}  # Gunakan token GitHub untuk autentikasi
           event-type: trigger-cucumber-tests  # Event yang memicu workflow di repository api-automation
 
   deploy-to-gh-pages:
