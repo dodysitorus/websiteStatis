@@ -3,7 +3,7 @@ name: Build, Run Automation and Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Workflow akan dijalankan saat ada push ke branch main
+      - main 
 
 jobs:
   trigger-cucumber-tests:
@@ -12,39 +12,32 @@ jobs:
     steps:
       # Langkah 1: Checkout repository Web Statis
       - name: Checkout Web Statis Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # Langkah 2: Trigger workflow di repository "api-automation"
       - name: Trigger Cucumber Automation from api-automation
-        uses: peter-evans/repository-dispatch@v2
+        uses: peter-evans/repository-dispatch@v3
         with:
-          repository: dodysitorus/api-automation  # Ganti dengan nama repository api-automation
-          token: ${{ secrets.GH_TOKEN }}  # Gunakan token GitHub untuk autentikasi
-          event-type: trigger-cucumber-tests  # Nama event yang memicu workflow di repository api-automation
-          client-payload: {}  # Opsional, jika ada payload tambahan yang perlu dikirim
+          repository: dodysitorus/api-automation
+          token: ${{ secrets.GH_TOKEN }} 
+          event-type: trigger-cucumber-tests
+          client-payload: {} 
 
   deploy-to-gh-pages:
     runs-on: ubuntu-latest
-    needs: trigger-cucumber-tests  # Pastikan tahap deploy hanya dijalankan setelah "trigger-cucumber-tests" berhasil
+    # Job ini akan dijalankan hanya setelah job pemicu BERHASIL DIKIRIM
+    needs: trigger-cucumber-tests 
 
     steps:
       # Langkah 3: Checkout repository Web Statis
       - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      # Langkah 4: Validasi jika "trigger-cucumber-tests" berhasil
-      - name: Check if Cucumber tests succeeded
-        run: |
-          if [ "${{ needs.trigger-cucumber-tests.result }}" != "success" ]; then
-            echo "Cucumber tests failed. Exiting the deploy step.";
-            exit 1;
-          fi
-
-      # Langkah 5: Deploy ke GitHub Pages
+        uses: actions/checkout@v3
+      
+      # Langkah 4: Deploy ke GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GH_TOKEN }}  # Gunakan PAT yang disimpan di secrets
-          publish_dir: ./  # Ganti dengan folder build jika menggunakan framework
+          github_token: ${{ secrets.GH_TOKEN }} 
+          publish_dir: ./ 
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
