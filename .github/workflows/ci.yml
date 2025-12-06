@@ -18,7 +18,7 @@ jobs:
       - name: Trigger Cucumber Automation from api-automation
         uses: peter-evans/repository-dispatch@v2
         with:
-          repository: <username>/api-automation  # Ganti dengan nama repository api-automation
+          repository: <dodysitorus>/api-automation  # Ganti dengan nama repository api-automation
           token: ${{ secrets.GITHUB_TOKEN }}  # Gunakan token GitHub untuk autentikasi
           event-type: trigger-cucumber-tests  # Event yang memicu workflow di repository api-automation
 
