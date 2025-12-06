@@ -26,14 +26,21 @@ jobs:
   deploy-to-gh-pages:
     runs-on: ubuntu-latest
     needs: trigger-cucumber-tests  # Pastikan tahap deploy hanya dijalankan setelah "trigger-cucumber-tests" berhasil
-    if: ${{ success() }}  # Memastikan job deploy hanya berjalan jika "trigger-cucumber-tests" sukses
 
     steps:
       # Langkah 3: Checkout repository Web Statis
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      # Langkah 4: Deploy ke GitHub Pages
+      # Langkah 4: Validasi jika "trigger-cucumber-tests" berhasil
+      - name: Check if Cucumber tests succeeded
+        run: |
+          if [ "${{ needs.trigger-cucumber-tests.result }}" != "success" ]; then
+            echo "Cucumber tests failed. Exiting the deploy step.";
+            exit 1;
+          fi
+
+      # Langkah 5: Deploy ke GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
